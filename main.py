@@ -16,7 +16,14 @@ def read_items():
     return {"Tu": "So izdelki"}
 
 @app.post("/registracija/")
-def read_items():
+def registriraj_stranko(username: str, password: str, ime: str, priimek: str, email: str, telefon: str, davcna: str):
+    print(username)
+    print(password)
+    print(ime)
+    print(priimek)
+    print(email)
+    print(telefon)
+    print(davcna)
     return {"Tu": "So izdelki"}
     
 @app.post("/prijava/")
