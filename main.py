@@ -1,11 +1,27 @@
 from typing import Union
-
+import time
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import mysql.connector
+from mysql.connector import pooling
 from pydantic import BaseModel
+from argon2 import PasswordHasher
 
 app = FastAPI()
+pool = mysql.connector.pooling.MySQLConnectionPool(
+    pool_name="mypool",
+    pool_size=5,
+    host="34.44.150.229",
+    user="zan",
+    password=">tnitm&+NqgoA=q6",
+    database="RSOUporabnikPrijava"
+)
+
+ph = PasswordHasher(
+    time_cost=3,        # iterations
+    memory_cost=64 * 1024,  # 64 MB
+    parallelism=4
+)
 
 class Stranka(BaseModel):
     username: str
@@ -42,6 +58,18 @@ def registriraj_stranko(stranka: Stranka):
     print(stranka.email)
     print(stranka.telefon)
     print(stranka.davcna)
+    hash = ph.hash(stranka.password)
+    timestamp = time.time()
+    print(hash)
+    conn = pool.get_connection()
+    cursor = conn.cursor()
+    
+    sql = "INSERT INTO Uporabnik(UporabniskoIme,Geslo,Vloga,UniqueID) VALUES (%s,%s,3,%s)"
+    cursor.execute(sql, (stranka.username,hash,timestamp))
+    conn.commit()
+    
+    cursor.close()
+    conn.close()
     return {"Tu": "So izdelki"}
     
 @app.post("/prijava/")
