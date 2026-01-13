@@ -9,7 +9,7 @@ app = FastAPI()
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"Mikrostoritev": "UporabnikPrijava"}
 
 @app.get("/items/")
 def read_items():
