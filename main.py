@@ -70,7 +70,7 @@ def registriraj_stranko(stranka: Stranka):
     
     cursor.close()
     conn.close()
-    return {"Tu": "So izdelki"}
+    return {"Registracija": "Dela"}
     
 @app.post("/prijava/")
 def read_items():
