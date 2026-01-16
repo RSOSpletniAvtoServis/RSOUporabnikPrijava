@@ -82,7 +82,7 @@ def registriraj_stranko(stranka: Stranka):
             break
         
         
-        
+        conn.commit()
         cursor.close()
         conn.close()
     except Exception as e:
