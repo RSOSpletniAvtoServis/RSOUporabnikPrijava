@@ -64,9 +64,16 @@ def registriraj_stranko(stranka: Stranka):
     conn = pool.get_connection()
     cursor = conn.cursor()
     
+    
     sql = "INSERT INTO Uporabnik(UporabniskoIme,Geslo,Vloga,UniqueID) VALUES (%s,%s,3,%s)"
     cursor.execute(sql, (stranka.username,hash,timestamp))
-    conn.commit()
+    
+    query = "SELECT IDUporabnik, UporabniskoIme, Vloga, UniqueID FROM Uporabnik"
+    cursor.execute(query)
+    for row in cursor:
+        print(row)   # row is a tuple (id, name)
+    
+    
     
     cursor.close()
     conn.close()
