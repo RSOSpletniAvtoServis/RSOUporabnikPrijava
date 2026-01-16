@@ -72,8 +72,8 @@ def registriraj_stranko(stranka: Stranka):
         sql = "INSERT INTO Uporabnik(UporabniskoIme,Geslo,Vloga,UniqueID) VALUES (%s,%s,3,%s)"
         cursor.execute(sql, (stranka.username,hash,timestamp))
         
-        query = "SELECT ID_Uporabnik, UporabniskoIme, Vloga, UniqueID FROM Uporabnik"
-        cursor.execute(query)
+        query = "SELECT ID_Uporabnik, UporabniskoIme, Vloga, UniqueID FROM Uporabnik WHERE UporabniskoIme = %s"
+        cursor.execute(query,stranka.username)
         for row in cursor:
             print(row)   # row is a tuple (id, name)
         
