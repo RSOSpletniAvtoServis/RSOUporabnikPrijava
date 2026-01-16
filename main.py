@@ -8,14 +8,17 @@ from pydantic import BaseModel
 from argon2 import PasswordHasher
 
 app = FastAPI()
-pool = mysql.connector.pooling.MySQLConnectionPool(
-    pool_name="mypool",
-    pool_size=5,
-    host="34.44.150.229",
-    user="zan",
-    password=">tnitm&+NqgoA=q6",
-    database="RSOUporabnikPrijava"
-)
+try:
+    pool = mysql.connector.pooling.MySQLConnectionPool(
+        pool_name="mypool",
+        pool_size=5,
+        host="34.44.150.229",
+        user="zan",
+        password=">tnitm&+NqgoA=q6",
+        database="RSOUporabnikPrijava"
+    )
+except Exception as e:
+    print("Error: ",e)
 
 ph = PasswordHasher(
     time_cost=3,        # iterations
@@ -61,22 +64,25 @@ def registriraj_stranko(stranka: Stranka):
     hash = ph.hash(stranka.password)
     timestamp = time.time()
     print(hash)
-    conn = pool.get_connection()
-    cursor = conn.cursor()
-    
-    
-    sql = "INSERT INTO Uporabnik(UporabniskoIme,Geslo,Vloga,UniqueID) VALUES (%s,%s,3,%s)"
-    cursor.execute(sql, (stranka.username,hash,timestamp))
-    
-    query = "SELECT IDUporabnik, UporabniskoIme, Vloga, UniqueID FROM Uporabnik"
-    cursor.execute(query)
-    for row in cursor:
-        print(row)   # row is a tuple (id, name)
-    
-    
-    
-    cursor.close()
-    conn.close()
+    try:
+        conn = pool.get_connection()
+        cursor = conn.cursor()
+        
+        
+        sql = "INSERT INTO Uporabnik(UporabniskoIme,Geslo,Vloga,UniqueID) VALUES (%s,%s,3,%s)"
+        cursor.execute(sql, (stranka.username,hash,timestamp))
+        
+        query = "SELECT ID, UporabniskoIme, Vloga, UniqueID FROM Uporabnik"
+        cursor.execute(query)
+        for row in cursor:
+            print(row)   # row is a tuple (id, name)
+        
+        
+        
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        print("Error: ", e)
     return {"Registracija": "Dela"}
     
 @app.post("/prijava/")
