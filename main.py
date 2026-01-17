@@ -94,13 +94,13 @@ def read_items():
     return {"Tu": "So izdelki"}
 
 @app.get("/preveriusername/{username}")
-def read_item(username: int):
+def read_item(username: str):
     try:
         conn = pool.get_connection()
         cursor = conn.cursor()
         
         query = "SELECT ID_Uporabnik, UporabniskoIme, Vloga, UniqueID FROM Uporabnik WHERE UporabniskoIme = %s"
-        cursor.execute(query,(stranka.username,))
+        cursor.execute(query,(username,))
         rows = cursor.fetchall()
         
         if rows:
