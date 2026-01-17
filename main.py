@@ -93,6 +93,27 @@ def registriraj_stranko(stranka: Stranka):
 def read_items():
     return {"Tu": "So izdelki"}
 
+@app.get("/preveriusername/{username}")
+def read_item(username: int):
+    try:
+        conn = pool.get_connection()
+        cursor = conn.cursor()
+        
+        query = "SELECT ID_Uporabnik, UporabniskoIme, Vloga, UniqueID FROM Uporabnik WHERE UporabniskoIme = %s"
+        cursor.execute(query,(stranka.username,))
+        rows = cursor.fetchall()
+        
+        if rows:
+            return {"valid": "False"}
+        else:
+            return {"valid": "True"}
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        print("Error: ", e)    
+    return {"valid": "unknown"}
+
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Union[str, None] = None):
     return {"item_id": item_id, "q": q}
