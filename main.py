@@ -15,7 +15,7 @@ try:
         host="34.44.150.229",
         user="zan",
         password=">tnitm&+NqgoA=q6",
-        database="RSOUporabnikPrijava"
+        database="RSOUporabnikPrijava",
         autocommit=True
     )
 except Exception as e:
