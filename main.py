@@ -16,6 +16,7 @@ try:
         user="zan",
         password=">tnitm&+NqgoA=q6",
         database="RSOUporabnikPrijava"
+        autocommit=True
     )
 except Exception as e:
     print("Error: ",e)
