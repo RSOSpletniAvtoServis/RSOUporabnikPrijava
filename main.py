@@ -104,8 +104,14 @@ def read_item(username: str):
         rows = cursor.fetchall()
         
         if rows:
+            conn.commit()
+            cursor.close()
+            conn.close()
             return {"valid": "False"}
         else:
+            conn.commit()
+            cursor.close()
+            conn.close()
             return {"valid": "True"}
         conn.commit()
         cursor.close()
