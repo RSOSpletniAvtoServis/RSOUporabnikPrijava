@@ -63,6 +63,9 @@ def registriraj_stranko(stranka: Stranka):
     print(stranka.telefon)
     print(stranka.davcna)
     hash = ph.hash(stranka.password)
+    uporabnikID = ""
+    vloga = ""
+    uniqueID = ""
     timestamp = time.time()
     print(hash)
     try:
@@ -80,16 +83,20 @@ def registriraj_stranko(stranka: Stranka):
             print(row)   # row is a tuple (id, name)
             sql = "INSERT INTO Stranka(Ime,Priimek,Email,Telefon,DavcnaStevilka,Uporabnik_ID_Uporabnik) VALUES (%s,%s,%s,%s,%s,%s)"
             cursor.execute(sql, (stranka.ime,stranka.priimek,stranka.email,stranka.telefon,stranka.davcna,row[0]))
+            uporabnikID = row[0]
+            vloga = row[2]
+            uniqueID = row[3]
             break
         
         
         
     except Exception as e:
         print("Error: ", e)
+        return {"Error": e}
     finally:
         cursor.close()
         conn.close()  
-    return {"Registracija": "Dela"}
+    return {"UporabnikID": uporabnikID, "Vloga": vloga, "UniqueID": uniqueID}
     
 @app.post("/prijava/")
 def read_items():
