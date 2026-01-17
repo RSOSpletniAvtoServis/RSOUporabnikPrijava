@@ -36,6 +36,10 @@ class Stranka(BaseModel):
     telefon: str
     davcna: str
 
+class Prijava(BaseModel):
+    username: str
+    password: str
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # allow all origins (dev only!)
@@ -52,6 +56,41 @@ def read_root():
 @app.get("/items/")
 def read_items():
     return {"Tu": "So izdelki"}
+    
+@app.post("/prijava/")
+def prijava(prijava: Prijava):
+    uporabnikID = ""
+    geslo = ""
+    vloga = ""
+    uniqueID = ""
+    try:
+        conn = pool.get_connection()
+        cursor = conn.cursor()
+        
+        
+        query = "SELECT ID_Uporabnik, UporabniskoIme, Geslo, Vloga, UniqueID FROM Uporabnik WHERE UporabniskoIme = %s"
+        cursor.execute(query,(stranka.username,))
+        rows = cursor.fetchall()
+        for row in rows:
+            print(row)   # row is a tuple (id, name)
+            uporabnikID = row[0]
+            geslo = row[2]
+            vloga = row[3]
+            uniqueID = row[4]
+            break
+        
+        ph.verify(geslo, prijava.password)
+        return {"Prijava": "passed", "UporabnikID": uporabnikID, "Vloga": vloga, "UniqueID": uniqueID}
+        
+        
+    except Exception as e:
+        print("Error: ", e)
+        return {"Error": e}
+    finally:
+        cursor.close()
+        conn.close()  
+    return {"Prijava": "failed"}
+    
 
 @app.post("/registracija/")
 def registriraj_stranko(stranka: Stranka):
@@ -103,7 +142,7 @@ def read_items():
     return {"Tu": "So izdelki"}
 
 @app.get("/preveriusername/{username}")
-def read_item(username: str):
+def preveri_username(username: str):
     try:
         conn = pool.get_connection()
         cursor = conn.cursor()
