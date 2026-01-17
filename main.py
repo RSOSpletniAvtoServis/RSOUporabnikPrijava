@@ -85,7 +85,7 @@ def prijava(prijava: Prijava):
         
     except Exception as e:
         print("Error: ", e)
-        return {"Error": e}
+        return {"Prijava": "failed", "Error": e}
     finally:
         cursor.close()
         conn.close()  
@@ -137,9 +137,6 @@ def registriraj_stranko(stranka: Stranka):
         conn.close()  
     return {"UporabnikID": uporabnikID, "Vloga": vloga, "UniqueID": uniqueID}
     
-@app.post("/prijava/")
-def read_items():
-    return {"Tu": "So izdelki"}
 
 @app.get("/preveriusername/{username}")
 def preveri_username(username: str):
