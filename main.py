@@ -83,11 +83,12 @@ def registriraj_stranko(stranka: Stranka):
             break
         
         
-        conn.commit()
-        cursor.close()
-        conn.close()
+        
     except Exception as e:
         print("Error: ", e)
+    finally:
+        cursor.close()
+        conn.close()  
     return {"Registracija": "Dela"}
     
 @app.post("/prijava/")
@@ -105,20 +106,14 @@ def read_item(username: str):
         rows = cursor.fetchall()
         
         if rows:
-            conn.commit()
-            cursor.close()
-            conn.close()
             return {"valid": "False"}
         else:
-            conn.commit()
-            cursor.close()
-            conn.close()
             return {"valid": "True"}
-        conn.commit()
-        cursor.close()
-        conn.close()
     except Exception as e:
-        print("Error: ", e)    
+        print("Error: ", e)
+    finally:
+        cursor.close()
+        conn.close() 
     return {"valid": "unknown"}
 
 @app.get("/items/{item_id}")
