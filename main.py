@@ -69,7 +69,7 @@ def prijava(prijava: Prijava):
         
         
         query = "SELECT ID_Uporabnik, UporabniskoIme, Geslo, Vloga, UniqueID FROM Uporabnik WHERE UporabniskoIme = %s"
-        cursor.execute(query,(stranka.username,))
+        cursor.execute(query,(prijava.username,))
         rows = cursor.fetchall()
         for row in rows:
             print(row)   # row is a tuple (id, name)
