@@ -104,13 +104,14 @@ def prijava(prijava: Prijava):
         
         ph.verify(geslo, prijava.password)
         timestamp = int(time.time())
-        sql = "INSERT INTO Prijava(ZasebniKljuc,CasZacetka,CasTrajanja,IDUporabnik) VALUES ('kljuc',%s,1000,%s)"
-        cursor.execute(sql, (timestamp,uporabnikID))
+        sql = "INSERT INTO Prijava(ZasebniKljuc,CasZacetka,CasTrajanja,IDUporabnik) VALUES (%s,%s,%s,%s)"
+        cursor.execute(sql, ('kljuc',timestamp,1000,uporabnikID))
         return {"Prijava": "passed", "IDUporabnik": uporabnikID, "Vloga": vloga, "UniqueID": uniqueID}
         
         
     except Exception as e:
         print("Error: ", e)
+        print("MySQL error:", repr(e))
         return {"Prijava": "failed", "Error": e}
     finally:
         cursor.close()
