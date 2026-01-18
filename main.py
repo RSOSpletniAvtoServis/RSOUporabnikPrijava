@@ -103,7 +103,7 @@ def prijava(prijava: Prijava):
             break
         
         ph.verify(geslo, prijava.password)
-        timestamp = time.time()
+        timestamp = int(time.time())
         sql = "INSERT INTO Prijava(ZasebniKljuc,CasZacetka,CasTrajanja,IDUporabnik) VALUES ('kljuc',%s,1000,%s)"
         cursor.execute(sql, (timestamp,uporabnikID))
         return {"Prijava": "passed", "IDUporabnik": uporabnikID, "Vloga": vloga, "UniqueID": uniqueID}
