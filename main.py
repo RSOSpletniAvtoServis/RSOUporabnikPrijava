@@ -56,6 +56,29 @@ def read_root():
 @app.get("/items/")
 def read_items():
     return {"Tu": "So izdelki"}
+
+@app.get("/addadmin/")
+def add_admin():
+    username = "admin"
+    password = "admin"
+    hash = ph.hash(password)
+    timestamp = time.time()
+    print(hash)
+    try:
+        conn = pool.get_connection()
+        cursor = conn.cursor()
+        sql = "INSERT INTO Uporabnik(UporabniskoIme,Geslo,Vloga,UniqueID) VALUES (%s,%s,1,%s)"
+        cursor.execute(sql, (username,hash,timestamp))
+        return {"Dodaja": "Success"}
+        
+        
+    except Exception as e:
+        print("Error: ", e)
+        return {"Dodaja": "Spodletela", "Error": e}
+    finally:
+        cursor.close()
+        conn.close()     
+    return {"Dodaja": "Unknown"}
     
 @app.post("/prijava/")
 def prijava(prijava: Prijava):
@@ -68,7 +91,7 @@ def prijava(prijava: Prijava):
         cursor = conn.cursor()
         
         
-        query = "SELECT ID_Uporabnik, UporabniskoIme, Geslo, Vloga, UniqueID FROM Uporabnik WHERE UporabniskoIme = %s"
+        query = "SELECT IDUporabnik, UporabniskoIme, Geslo, Vloga, UniqueID FROM Uporabnik WHERE UporabniskoIme = %s"
         cursor.execute(query,(prijava.username,))
         rows = cursor.fetchall()
         for row in rows:
@@ -80,7 +103,7 @@ def prijava(prijava: Prijava):
             break
         
         ph.verify(geslo, prijava.password)
-        return {"Prijava": "passed", "UporabnikID": uporabnikID, "Vloga": vloga, "UniqueID": uniqueID}
+        return {"Prijava": "passed", "IDUporabnik": uporabnikID, "Vloga": vloga, "UniqueID": uniqueID}
         
         
     except Exception as e:
@@ -115,12 +138,12 @@ def registriraj_stranko(stranka: Stranka):
         sql = "INSERT INTO Uporabnik(UporabniskoIme,Geslo,Vloga,UniqueID) VALUES (%s,%s,3,%s)"
         cursor.execute(sql, (stranka.username,hash,timestamp))
         
-        query = "SELECT ID_Uporabnik, UporabniskoIme, Vloga, UniqueID FROM Uporabnik WHERE UporabniskoIme = %s"
+        query = "SELECT IDUporabnik, UporabniskoIme, Vloga, UniqueID FROM Uporabnik WHERE UporabniskoIme = %s"
         cursor.execute(query,(stranka.username,))
         rows = cursor.fetchall()
         for row in rows:
             print(row)   # row is a tuple (id, name)
-            sql = "INSERT INTO Stranka(Ime,Priimek,Email,Telefon,DavcnaStevilka,Uporabnik_ID_Uporabnik) VALUES (%s,%s,%s,%s,%s,%s)"
+            sql = "INSERT INTO Stranka(Ime,Priimek,Email,Telefon,DavcnaStevilka,IDUporabnik) VALUES (%s,%s,%s,%s,%s,%s)"
             cursor.execute(sql, (stranka.ime,stranka.priimek,stranka.email,stranka.telefon,stranka.davcna,row[0]))
             uporabnikID = row[0]
             vloga = row[2]
@@ -144,7 +167,7 @@ def preveri_username(username: str):
         conn = pool.get_connection()
         cursor = conn.cursor()
         
-        query = "SELECT ID_Uporabnik, UporabniskoIme, Vloga, UniqueID FROM Uporabnik WHERE UporabniskoIme = %s"
+        query = "SELECT IDUporabnik, UporabniskoIme, Vloga, UniqueID FROM Uporabnik WHERE UporabniskoIme = %s"
         cursor.execute(query,(username,))
         rows = cursor.fetchall()
         
