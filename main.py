@@ -104,6 +104,10 @@ def prijava(prijava: Prijava):
         
         ph.verify(geslo, prijava.password)
         timestamp = int(time.time())
+        #da se zagotovi, da je obstaja samo ena aktivna prijava na uporabnika
+        sql = "DELETE FROM Prijava WHERE IDUporabnik = %s"
+        cursor.execute(sql, (uporabnikID,))
+        
         sql = "INSERT INTO Prijava(ZasebniKljuc,CasZacetka,CasTrajanja,IDUporabnik) VALUES (%s,%s,%s,%s)"
         cursor.execute(sql, ('kljuc',timestamp,1000,uporabnikID))
         return {"Prijava": "passed", "IDUporabnik": uporabnikID, "Vloga": vloga, "UniqueID": uniqueID}
