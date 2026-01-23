@@ -190,6 +190,72 @@ def preveri_username(username: str):
         conn.close() 
     return {"valid": "unknown"}
 
+
+# Zacetek za vodjo
+
+class Vodja(BaseModel):
+    username: str
+    password: str
+
+@app.post("/dodajvodjo/")
+def dodaj_vodjo(vodja: Vodja):
+    print(vodja.username)
+    print(vodja.password)
+    hash = ph.hash(vodja.password)
+    uporabnikID = ""
+    vloga = ""
+    uniqueID = ""
+    timestamp = time.time()
+    print(hash)
+    try:
+        conn = pool.get_connection()
+        cursor = conn.cursor()
+        
+        
+        sql = "INSERT INTO Uporabnik(UporabniskoIme,Geslo,Vloga,UniqueID) VALUES (%s,%s,%s,%s)"
+        cursor.execute(sql, (vodja.username,hash,4,timestamp))
+        
+        query = "SELECT IDUporabnik, UporabniskoIme, Vloga, UniqueID FROM Uporabnik WHERE UporabniskoIme = %s"
+        cursor.execute(query,(vodja.username,))
+        row = cursor.fetchone()
+
+        if row is None:
+            raise HTTPException(status_code=404, detail="Znamka not found")
+
+        return {"Vodja": "passed", "IDUporabnik": row[0], "UporabniskoIme": row[1], "Vloga": row[2], "UniqueID": row[3]}
+
+        
+        
+        
+    except Exception as e:
+        print("Error: ", e)
+        return {"Vodja": "failed", "Error": e}
+    finally:
+        cursor.close()
+        conn.close()  
+    return {"Vodja": "undefined"}
+
+@app.get("/vodje/")
+def get_vodje():
+    try:
+        with pool.get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    "SELECT IDUporabnik, UporabniskoIme, Vloga, UniqueID, IDTennant FROM Uporabnik WHERE Vloga = 4"
+                )
+                rows = cursor.fetchall()
+        # Fixed columns → no need to read cursor.description
+        return [
+            {"IDUporabnik": row[0], "UporabniskoIme": row[1], "Vloga": row[2], "UniqueID": row[3], "IDTennant": row[4]}
+            for row in rows
+        ]
+    except Exception as e:
+        print("DB error:", e)
+        raise HTTPException(status_code=500, detail="Database error")
+    return {"Vodja": "failed"}   
+
+# Konec za vodjo
+
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Union[str, None] = None):
     return {"item_id": item_id, "q": q}
