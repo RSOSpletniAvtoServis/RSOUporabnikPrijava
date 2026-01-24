@@ -262,7 +262,7 @@ class Vodja1(BaseModel):
     
 @app.put("/dodelivodjo/")
 def dodeli_vodjo(vodja: Vodja1):
-
+    return {"Vodja": "failed"}
     try:
         conn = pool.get_connection()
         cursor = conn.cursor()
