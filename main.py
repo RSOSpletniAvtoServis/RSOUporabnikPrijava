@@ -254,7 +254,66 @@ def get_vodje():
         raise HTTPException(status_code=500, detail="Database error")
     return {"Vodja": "failed"}   
 
+
+class Vodja1(BaseModel):
+    idvodja: str
+    idtennant: str
+    uniqueid: str
+    
+@app.put("/dodelivodjo/")
+def dodeli_vodjo(vodja: Vodja1):
+
+    try:
+        conn = pool.get_connection()
+        cursor = conn.cursor()
+        
+        sql = "SELECT * FROM Uporabnik WHERE IDTennant = %s"
+        cursor.execute(sql, (vodja.idtennant,))
+        row = cursor.fetchone()
+        if row is None:
+            sql = "UPDATE Uporabnik SET IDTennant = %s WHERE IDUporabnik = %s"
+            cursor.execute(sql, (vodja.idtennant,vodja.idvodja))
+            return {"Vodja": "passed"}
+        else:
+            return {"Vodja": "failed", "Opis": "Tennant že ima vodjo"}
+
+        
+        
+        
+    except Exception as e:
+        print("Error: ", e)
+        return {"Vodja": "failed", "Error": e}
+    finally:
+        cursor.close()
+        conn.close()  
+    return {"Vodja": "undefined"}
+
+class VodjaProst(BaseModel):
+    uniqueid: str
+
+@app.post("/prostevodje/")
+def get_prostevodje(vodja: VodjaProst):
+    userid = vodja.uniqueid
+    try:
+        with pool.get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    "SELECT IDUporabnik, UporabniskoIme, Vloga, UniqueID, IDTennant FROM Uporabnik WHERE Vloga = 4 AND IDTennant IS NULL"
+                )
+                rows = cursor.fetchall()
+        # Fixed columns → no need to read cursor.description
+        return [
+            {"IDUporabnik": row[0], "UporabniskoIme": row[1], "Vloga": row[2], "UniqueID": row[3], "IDTennant": row[4]}
+            for row in rows
+        ]
+    except Exception as e:
+        print("DB error:", e)
+        raise HTTPException(status_code=500, detail="Database error")
+    return {"Vodja": "failed"}   
+
 # Konec za vodjo
+
+
 
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Union[str, None] = None):
