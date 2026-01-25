@@ -369,7 +369,7 @@ def get_usernames(users: Usernames):
     full_string = "(" + idmiddle + ")"
     print(ids_string)
     print(idmiddle)
-    print(fullstring)
+    print(full_string)
     return { "ids": users.ids, "uniqueid": users.uniqueid }
 
 #konec za username
