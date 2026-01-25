@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import mysql.connector
 from mysql.connector import pooling
 from pydantic import BaseModel
+from typing import List
 from argon2 import PasswordHasher
 
 app = FastAPI()
@@ -352,6 +353,24 @@ def odstrani_vodjo(vodja: Vodja1):
 
 
 # Konec za vodjo
+
+# za username 
+
+class Usernames(BaseModel):
+    ids: List[int]
+    uniqueid: str
+
+@app.post("/usernames/")
+def get_usernames(users: Usernames):
+    print(users.ids)     # list[int]
+    print(users.uniqueid)  # str
+    ids_string = "("
+    idmiddle = ",".join(users.ids)
+    print(ids_string)
+    print(idmiddle)
+    return { "ids": users.ids, "uniqueid": users.uniqueid }
+
+#konec za username
 
 
 
