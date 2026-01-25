@@ -365,7 +365,7 @@ def get_usernames(users: Usernames):
     print(users.ids)     # list[int]
     print(users.uniqueid)  # str
     ids_string = "("
-    idmiddle = ",".join(users.ids)
+    idmiddle = ",".join(str(i) for i in users.ids)
     print(ids_string)
     print(idmiddle)
     return { "ids": users.ids, "uniqueid": users.uniqueid }
