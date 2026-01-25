@@ -385,6 +385,7 @@ def get_usernames(users: Usernames):
     except Exception as e:
         print("DB error:", e)
         raise HTTPException(status_code=500, detail="Database error")
+        return {"Username": "failed"} 
     return {"Username": "failed"}    
 
 
