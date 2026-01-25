@@ -370,7 +370,23 @@ def get_usernames(users: Usernames):
     print(ids_string)
     print(idmiddle)
     print(full_string)
-    return { "ids": users.ids, "uniqueid": users.uniqueid }
+    
+    try:
+        with pool.get_connection() as conn:
+            with conn.cursor() as cursor:
+                sql = "SELECT IDUporabnik, UporabniskoIme FROM Uporabnik WHERE IDUporabnik IN %s"
+                cursor.execute(sql,(full_string,))
+                rows = cursor.fetchall()
+        # Fixed columns → no need to read cursor.description
+        return [
+            {row[0]: row[1]}
+            for row in rows
+        ]
+    except Exception as e:
+        print("DB error:", e)
+        raise HTTPException(status_code=500, detail="Database error")
+    return {"Username": "failed"}    
+
 
 #konec za username
 
