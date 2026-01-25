@@ -267,15 +267,18 @@ def dodeli_vodjo(vodja: Vodja1):
         conn = pool.get_connection()
         cursor = conn.cursor()
         
-        sql = "SELECT * FROM Uporabnik WHERE IDTennant = %s"
-        cursor.execute(sql, (vodja.idtennant,))
+        sql = "SELECT * FROM Uporabnik WHERE IDUporabnik = %s AND IDTennant IS NOT NULL"
+        cursor.execute(sql, (vodja.idvodja,))
         row = cursor.fetchone()
         if row is None:
+            sql = "UPDATE Uporabnik SET IDTennant = NULL WHERE IDTennant =  %s"
+            cursor.execute(sql, (vodja.idtennant,))
+            
             sql = "UPDATE Uporabnik SET IDTennant = %s WHERE IDUporabnik = %s"
             cursor.execute(sql, (vodja.idtennant,vodja.idvodja))
             return {"Vodja": "passed"}
         else:
-            return {"Vodja": "failed", "Opis": "Tennant že ima vodjo"}
+            return {"Vodja": "failed", "Opis": "izbrani uporabnik je vodja že drugemu tennantu"}
 
         
     except Exception as e:
