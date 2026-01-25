@@ -374,8 +374,8 @@ def get_usernames(users: Usernames):
     try:
         with pool.get_connection() as conn:
             with conn.cursor() as cursor:
-                sql = "SELECT IDUporabnik, UporabniskoIme FROM Uporabnik WHERE IDUporabnik IN %s"
-                cursor.execute(sql,(full_string,))
+                sql = "SELECT IDUporabnik, UporabniskoIme FROM Uporabnik WHERE IDUporabnik IN " + full_string
+                cursor.execute(sql)
                 rows = cursor.fetchall()
         # Fixed columns → no need to read cursor.description
         return [
