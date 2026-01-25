@@ -53,9 +53,6 @@ app.add_middleware(
 def read_root():
     return {"Mikrostoritev": "UporabnikPrijava"}
 
-@app.get("/items/")
-def read_items():
-    return {"Tu": "So izdelki"}
 
 @app.get("/addadmin/")
 def add_admin():
@@ -121,7 +118,28 @@ def prijava(prijava: Prijava):
         cursor.close()
         conn.close()  
     return {"Prijava": "failed"}
-    
+
+class Odjava(BaseModel):
+    uniqueid: str
+
+@app.delete("/odjava/")
+def prijava(odjava: Odjava):
+    try:
+        conn = pool.get_connection()
+        cursor = conn.cursor()
+        
+        query = "DELETE FROM Prijava WHERE IDUporabnik IN (SELECT IDUporabnik FROM Uporabnik WHERE uniqueid = %s)"
+        cursor.execute(query,(odjava.uniqueid,))
+        return {"Odjava": "passed"}
+        
+    except Exception as e:
+        print("Error: ", e)
+        print("MySQL error:", repr(e))
+        return {"Odjava": "failed", "Error": e}
+    finally:
+        cursor.close()
+        conn.close()  
+    return {"Odjava": "unknown"}    
 
 @app.post("/registracija/")
 def registriraj_stranko(stranka: Stranka):
