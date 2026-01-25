@@ -262,7 +262,7 @@ class Vodja1(BaseModel):
     
 @app.put("/dodelivodjo/")
 def dodeli_vodjo(vodja: Vodja1):
-    return {"Vodja": "failed"}
+    userid = vodja.uniqueid
     try:
         conn = pool.get_connection()
         cursor = conn.cursor()
@@ -277,8 +277,6 @@ def dodeli_vodjo(vodja: Vodja1):
         else:
             return {"Vodja": "failed", "Opis": "Tennant že ima vodjo"}
 
-        
-        
         
     except Exception as e:
         print("Error: ", e)
