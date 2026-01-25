@@ -89,7 +89,7 @@ def prijava(prijava: Prijava):
         cursor = conn.cursor()
         
         
-        query = "SELECT IDUporabnik, UporabniskoIme, Geslo, Vloga, UniqueID FROM Uporabnik WHERE UporabniskoIme = %s"
+        query = "SELECT IDUporabnik, UporabniskoIme, Geslo, Vloga, UniqueID, IDTennant FROM Uporabnik WHERE UporabniskoIme = %s"
         cursor.execute(query,(prijava.username,))
         rows = cursor.fetchall()
         for row in rows:
@@ -98,6 +98,7 @@ def prijava(prijava: Prijava):
             geslo = row[2]
             vloga = row[3]
             uniqueID = row[4]
+            idtennant = row[5]
             break
         
         ph.verify(geslo, prijava.password)
@@ -108,7 +109,7 @@ def prijava(prijava: Prijava):
         
         sql = "INSERT INTO Prijava(ZasebniKljuc,CasZacetka,CasTrajanja,IDUporabnik) VALUES (%s,%s,%s,%s)"
         cursor.execute(sql, ('kljuc',timestamp,1000,uporabnikID))
-        return {"Prijava": "passed", "IDUporabnik": uporabnikID, "Vloga": vloga, "UniqueID": uniqueID}
+        return {"Prijava": "passed", "IDUporabnik": uporabnikID, "Vloga": vloga, "UniqueID": uniqueID, "idtennant": idtennant}
         
         
     except Exception as e:
