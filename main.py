@@ -378,10 +378,8 @@ def get_usernames(users: Usernames):
                 cursor.execute(sql)
                 rows = cursor.fetchall()
         # Fixed columns → no need to read cursor.description
-        return [
-            {row[0]: row[1]}
-            for row in rows
-        ]
+        return {row[0]: row[1] for row in rows}
+
     except Exception as e:
         print("DB error:", e)
         raise HTTPException(status_code=500, detail="Database error")
