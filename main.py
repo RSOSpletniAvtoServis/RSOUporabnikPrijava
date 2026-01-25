@@ -312,6 +312,27 @@ def get_prostevodje(vodja: VodjaProst):
         raise HTTPException(status_code=500, detail="Database error")
     return {"Vodja": "failed"}   
 
+@app.delete("/odstranivodjo/")
+def odstrani_vodjo(vodja: Vodja1):
+    userid = vodja.uniqueid
+    try:
+        conn = pool.get_connection()
+        cursor = conn.cursor()
+        
+        sql = "UPDATE Uporabnik SET IDTennant = NULL WHERE IDUporabnik = %s"
+        cursor.execute(sql, (vodja.idvodja,))
+        return {"Vodja": "passed"}
+
+        
+    except Exception as e:
+        print("Error: ", e)
+        return {"Vodja": "failed", "Error": e}
+    finally:
+        cursor.close()
+        conn.close()  
+    return {"Vodja": "undefined"}
+
+
 # Konec za vodjo
 
 
