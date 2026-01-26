@@ -390,9 +390,53 @@ def get_usernames(users: Usernames):
 
 #konec za username
 
+# Zacetek zaposleni
+
+class Zaposleni(BaseModel):
+    username: str
+    password: str
+    idtennant: str
+    uniqueid: str
+
+@app.post("/dodajzaposlenega/")
+def dodaj_zaposlenega(zaposleni: Zaposleni):
+    print(zaposleni.username)
+    print(zaposleni.password)
+    hash = ph.hash(zaposleni.password)
+    uporabnikID = ""
+    vloga = ""
+    uniqueID = ""
+    timestamp = time.time()
+    print(hash)
+    try:
+        conn = pool.get_connection()
+        cursor = conn.cursor()
+        
+        
+        sql = "INSERT INTO Uporabnik(UporabniskoIme,Geslo,Vloga,UniqueID,IDTennant) VALUES (%s,%s,%s,%s,%s)"
+        cursor.execute(sql, (zaposleni.username,hash,2,timestamp,zaposleni.idtennant))
+        
+        query = "SELECT IDUporabnik, UporabniskoIme, Vloga, UniqueID FROM Uporabnik WHERE UporabniskoIme = %s"
+        cursor.execute(query,(zaposleni.username,))
+        row = cursor.fetchone()
+
+        if row is None:
+            raise HTTPException(status_code=404, detail="Znamka not found")
+
+        return {"Zaposleni": "passed", "IDUporabnik": row[0], "UporabniskoIme": row[1], "Vloga": row[2], "UniqueID": row[3]}
+
+        
+        
+        
+    except Exception as e:
+        print("Error: ", e)
+        return {"Zaposleni": "failed", "Error": e}
+    finally:
+        cursor.close()
+        conn.close()  
+    return {"Zaposleni": "undefined"}
+
+# Konec zaposleni
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
     
