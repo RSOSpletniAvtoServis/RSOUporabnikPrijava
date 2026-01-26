@@ -436,6 +436,33 @@ def dodaj_zaposlenega(zaposleni: Zaposleni):
         conn.close()  
     return {"Zaposleni": "undefined"}
 
+
+
+# Zacetek odstrani zaposlenega
+
+class Uporabnik(BaseModel):
+    iduporabnik: str
+    uniqueid: str
+
+@app.delete("/odstraniuporabnika/")
+def odstrani_uporabnika(upo: Uporabnik):
+    try:
+        conn = pool.get_connection()
+        cursor = conn.cursor()
+            
+        sql = "DELETE FROM Uporabnik WHERE IDUporabnik = %s"
+        cursor.execute(sql, (upo.iduporabnik,)
+        return {"Uporabnik": "passed"}
+     
+    except Exception as e:
+        print("Error: ", e)
+        return {"Uporabnik": "failed", "Error": e}
+    finally:
+        cursor.close()
+        conn.close()  
+    return {"Uporabnik": "undefined"}
+
+# Konec odstrani zaposlenega
 # Konec zaposleni
 
 
