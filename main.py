@@ -451,7 +451,7 @@ def odstrani_uporabnika(upo: Uporabnik):
         cursor = conn.cursor()
             
         sql = "DELETE FROM Uporabnik WHERE IDUporabnik = %s"
-        cursor.execute(sql, (upo.iduporabnik,)
+        cursor.execute(sql, (upo.iduporabnik,))
         return {"Uporabnik": "passed"}
      
     except Exception as e:
