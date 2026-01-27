@@ -549,9 +549,9 @@ def spremenigeslo(geslo: Geslo):
         query = "SELECT IDUporabnik, UporabniskoIme, Geslo, Vloga, UniqueID, IDTennant FROM Uporabnik WHERE IDUporabnik = %s"
         cursor.execute(query,(geslo.iduporabnik,))
         row = cursor.fetchone()
-        geslo = row[2]
+        password = row[2]
         
-        ph.verify(geslo, geslo.trenutnogeslo)
+        ph.verify(password, geslo.trenutnogeslo)
         
         hash = ph.hash(geslo.novogeslo)
         query = "UPDATE Uporabnik SET Geslo = %s WHERE IDUporabnik = %s"
