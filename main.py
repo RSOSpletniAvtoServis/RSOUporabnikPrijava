@@ -530,4 +530,48 @@ def posodobi_stranko(stranka: Stranka2):
 
 #Konec stranka
 
+# Zacetek geslo
+
+class Geslo(BaseModel):
+    trenutnogeslo: str
+	novogeslo: str
+	iduporabnik: str
+	uniqueid: str
+
+@app.put("/spremenigeslo/")
+def spremenigeslo(geslo: Geslo):
+    uporabnikID = ""
+    geslo = ""
+    vloga = ""
+    uniqueID = ""
+    try:
+        conn = pool.get_connection()
+        cursor = conn.cursor()
+        
+        
+        query = "SELECT IDUporabnik, UporabniskoIme, Geslo, Vloga, UniqueID, IDTennant FROM Uporabnik WHERE IDUporabnik = %s"
+        cursor.execute(query,(geslo.iduporabnik,))
+        row = cursor.fetchone()
+        geslo = row[2]
+        
+        ph.verify(geslo, geslo.trenutnogeslo)
+        
+        hash = ph.hash(geslo.novogeslo)
+        query = "UPDATE Uporabnik SET Geslo = %s WHERE IDUporabnik = %s"
+        cursor.execute(query,(hash,geslo.iduporabnik,))
+        return {"Geslo": "passed"}
+        
+        
+        
+        
+    except Exception as e:
+        print("Error: ", e)
+        print("MySQL error:", repr(e))
+        return {"Geslo": "failed", "Error": e}
+    finally:
+        cursor.close()
+        conn.close()  
+    return {"Geslo": "failed"}
+
+# Konec geslo
     
