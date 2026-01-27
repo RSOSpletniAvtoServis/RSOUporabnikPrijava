@@ -465,5 +465,69 @@ def odstrani_uporabnika(upo: Uporabnik):
 # Konec odstrani zaposlenega
 # Konec zaposleni
 
+# Zacetek stranka
+
+class Stranka1(BaseModel):
+    iduporabnik: str
+    uniqueid: str
+
+@app.get("/stranka/")
+def get_stranka(stranka: Stranka1):
+    
+    try:
+        with pool.get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    "SELECT IDStranka, Ime, Priimek, Email, Telefon, DavcnaStevilka, IDUporabnik FROM Stranka WHERE IDUporabnik = %s",
+                    (stranka.iduporabnik,)
+                )
+
+                row = cursor.fetchone()
+
+                if row is None:
+                    raise HTTPException(status_code=404, detail="Znamka not found")
+
+                return {"IDStranka": row[0], "Ime": row[1], "Priimek": row[2], "Email": row[3], "Telefon": row[4], "DavcnaStevilka": row[5], "IDUporabnik": row[6]}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print("DB error:", e)
+        raise HTTPException(status_code=500, detail="Database error")
+        return {"Stranka": "failed"}
+    return {"Stranka": "undefined"}
+
+
+class Stranka2(BaseModel):
+    ime: str
+    priimek: str
+    email: str
+    telefon: str
+    davcna: str
+    iduporabnik: str
+    uniqueid: str
+    
+@app.put("/posodobistranko/")
+def posodobi_stranko(stranka: Stranka2):
+    userid = stranka.uniqueid
+    try:
+        conn = pool.get_connection()
+        # Create a cursor
+        cursor = conn.cursor()
+
+        query = "UPDATE Stranka SET Ime = %s, Priimek = %s, Email = %s, Telefon = %s, DavcnaStevilka = %s WHERE IDUporabnik = %s"
+        cursor.execute(query,(stranka.ime,stranka.priimek,stranka.email,stranka.telefon,stranka.davcna,stranka.iduporabnik))
+        return {"Stranka": "passed"}
+  
+    except Exception as e:
+        print("Error: ", e)
+        return {"Stranka": "failed"}
+    finally:
+        cursor.close()
+        conn.close() 
+    return {"Stranka": "unknown"}
+
+
+#Konec stranka
 
     
