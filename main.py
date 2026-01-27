@@ -540,10 +540,7 @@ class Geslo(BaseModel):
 
 @app.put("/spremenigeslo/")
 def spremenigeslo(geslo: Geslo):
-    uporabnikID = ""
-    geslo = ""
-    vloga = ""
-    uniqueID = ""
+
     try:
         conn = pool.get_connection()
         cursor = conn.cursor()
