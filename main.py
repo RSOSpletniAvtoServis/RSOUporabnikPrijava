@@ -471,7 +471,7 @@ class Stranka1(BaseModel):
     iduporabnik: str
     uniqueid: str
 
-@app.get("/stranka/")
+@app.post("/stranka/")
 def get_stranka(stranka: Stranka1):
     
     try:
