@@ -575,3 +575,4 @@ def spremenigeslo(geslo: Geslo):
 
 # Konec geslo
     
+#Komentar
