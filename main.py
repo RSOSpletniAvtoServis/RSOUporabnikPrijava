@@ -534,9 +534,9 @@ def posodobi_stranko(stranka: Stranka2):
 
 class Geslo(BaseModel):
     trenutnogeslo: str
-	novogeslo: str
-	iduporabnik: str
-	uniqueid: str
+    novogeslo: str
+    iduporabnik: str
+    uniqueid: str
 
 @app.put("/spremenigeslo/")
 def spremenigeslo(geslo: Geslo):
