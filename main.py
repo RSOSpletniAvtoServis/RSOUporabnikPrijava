@@ -125,7 +125,7 @@ class Odjava(BaseModel):
     uniqueid: str
 
 @app.delete("/odjava/")
-def prijava(odjava: Odjava):
+def odjava(odjava: Odjava):
     try:
         conn = pool.get_connection()
         cursor = conn.cursor()
@@ -579,7 +579,7 @@ class Stranka007(BaseModel):
     uniqueid: str
 
 @app.post("/izbranestranke/")
-def get_izbranikraji(stranka: Stranka007):
+def get_izbranestranke(stranka: Stranka007):
     print(stranka.ids)     # list[int]
     print(stranka.uniqueid)  # str
     ids_string = "("
