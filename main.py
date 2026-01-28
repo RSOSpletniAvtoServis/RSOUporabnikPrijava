@@ -571,5 +571,38 @@ def spremenigeslo(geslo: Geslo):
     return {"Geslo": "failed"}
 
 # Konec geslo
+
+# Dobi stranke
+
+class Stranka007(BaseModel):
+    ids: List[int]
+    uniqueid: str
+
+@app.post("/izbranestranke/")
+def get_izbranikraji(stranka: Stranka007):
+    print(stranka.ids)     # list[int]
+    print(stranka.uniqueid)  # str
+    ids_string = "("
+    idmiddle = ",".join(str(i) for i in stranka.ids)
+    full_string = "(" + idmiddle + ")"
+    print(ids_string)
+    print(idmiddle)
+    print(full_string)
+    
+    try:
+        with pool.get_connection() as conn:
+            with conn.cursor() as cursor:
+                sql = "SELECT IDStranka, Ime, Priimek, Telefon, Email, DavcnaStevilka FROM Stranka WHERE IDStranka IN " + full_string
+                cursor.execute(sql)
+                rows = cursor.fetchall()
+                # Fixed columns → no need to read cursor.description
+                columns = [desc[0] for desc in cursor.description]
+                return { row[0]: dict(zip(columns, row)) for row in rows}
+
+    except Exception as e:
+        print("DB error:", e)
+        raise HTTPException(status_code=500, detail="Database error")
+        return {"Stranka": "failed"} 
+    return {"Stranka": "failed"}
     
 #Komentar
