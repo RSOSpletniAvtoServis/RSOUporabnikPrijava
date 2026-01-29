@@ -606,3 +606,8 @@ def get_izbranestranke(stranka: Stranka007):
     return {"Stranka": "failed"}
     
 #Komentar
+
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
