@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from typing import List
 from argon2 import PasswordHasher
 
-app = FastAPI()
+app = FastAPI(root_path="/upopri")
 try:
     pool = mysql.connector.pooling.MySQLConnectionPool(
         pool_name="mypool",
