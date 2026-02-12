@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from typing import List
 from argon2 import PasswordHasher
 
+db_healthy = True
 app = FastAPI(root_path="/upopri")
 try:
     pool = mysql.connector.pooling.MySQLConnectionPool(
@@ -21,6 +22,7 @@ try:
     )
 except Exception as e:
     print("Error: ",e)
+    db_healthy = False
 
 ph = PasswordHasher(
     time_cost=3,        # iterations
@@ -615,7 +617,10 @@ def health():
     
 @app.get("/health/live")
 def live():
-    return {"status": "alive"}
+    if db_healthy:
+        return {"status": "alive"}
+    else:
+        return Response(status_code=500)
 
 @app.get("/health/ready")
 def ready():
