@@ -10,18 +10,24 @@ from argon2 import PasswordHasher
 
 db_healthy = True
 app = FastAPI(root_path="/upopri")
-try:
-    pool = mysql.connector.pooling.MySQLConnectionPool(
-        pool_name="mypool",
-        pool_size=5,
-        host="127.0.0.1",               #34.44.150.229",
-        user="zan",
-        password=">tnitm&+NqgoA=q6",
-        database="RSOUporabnikPrijava",
-        autocommit=True
-    )
-except Exception as e:
-    print("Error: ",e)
+
+for i in range(5):
+    try:
+        pool = mysql.connector.pooling.MySQLConnectionPool(
+            pool_name="mypool",
+            pool_size=5,
+            host="127.0.0.1",               #34.44.150.229",
+            user="zan",
+            password=">tnitm&+NqgoA=q6",
+            database="RSOUporabnikPrijava",
+            autocommit=True
+        )
+    except Exception as e:
+        print("Error: ",e)
+        print(f"DB connection failed, retrying... ({i+1}/5)")
+        time.sleep(5)
+else:
+    raise RuntimeError("Could not connect to the database after 5 attempts")
     db_healthy = False
 
 ph = PasswordHasher(
