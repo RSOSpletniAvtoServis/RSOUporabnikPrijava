@@ -21,7 +21,7 @@ logger.setLevel(logging.INFO)
 
 logHandler = logging.StreamHandler(sys.stdout)
 formatter = jsonlogger.JsonFormatter(
-    "%(asctime)s %(levelname)s %(name)s %(message)s %(request_id)s"
+    "%(asctime)s %(levelname)s %(name)s %(message)s %(request_id)s %(endpoint)s %(service)s"
 )
 logHandler.setFormatter(formatter)
 logger.addHandler(logHandler)
@@ -235,7 +235,7 @@ def preveri_username(username: str, request: Request):
     try:
         logger.info(
         "Zacetek preverjanja uporabniskega imena",
-        extra={"request_id": request.state.request_id}
+        extra={"request_id": request.state.request_id, "endpoint": "preveriusername", "service": "upopri"}
         )
         conn = pool.get_connection()
         cursor = conn.cursor()
