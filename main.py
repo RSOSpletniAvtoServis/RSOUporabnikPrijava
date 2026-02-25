@@ -7,6 +7,9 @@ from mysql.connector import pooling
 from pydantic import BaseModel
 from typing import List
 from argon2 import PasswordHasher
+import os
+
+DB_URL = os.getenv("DB_URL","127.0.0.1")
 
 db_healthy = True
 app = FastAPI(root_path="/upopri")
@@ -16,7 +19,7 @@ for i in range(5):
         pool = mysql.connector.pooling.MySQLConnectionPool(
             pool_name="mypool",
             pool_size=5,
-            host="127.0.0.1",               #34.44.150.229",
+            host=DB_URL,   #"127.0.0.1",               #34.44.150.229",
             user="zan",
             password=">tnitm&+NqgoA=q6",
             database="RSOUporabnikPrijava",
