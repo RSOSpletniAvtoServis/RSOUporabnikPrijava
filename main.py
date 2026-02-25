@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from typing import List
 from argon2 import PasswordHasher
 import os
-
+import uuid
 from fastapi import Request
 
 import logging
