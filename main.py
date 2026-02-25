@@ -9,6 +9,24 @@ from typing import List
 from argon2 import PasswordHasher
 import os
 
+from fastapi import Request
+
+import logging
+import sys
+from pythonjsonlogger import jsonlogger
+
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+logHandler = logging.StreamHandler(sys.stdout)
+formatter = jsonlogger.JsonFormatter(
+    "%(asctime)s %(levelname)s %(name)s %(message)s %(request_id)s"
+)
+logHandler.setFormatter(formatter)
+logger.addHandler(logHandler)
+
+
 DB_URL = os.getenv("DB_URL","127.0.0.1")
 
 db_healthy = True
@@ -60,6 +78,17 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def add_request_id(request: Request, call_next):
+    request_id = str(uuid.uuid4())
+    request.state.request_id = request_id
+    
+    response = await call_next(request)
+    response.headers["X-Request-ID"] = request_id
+    return response
+
+
 
 
 @app.get("/")
@@ -202,8 +231,12 @@ def registriraj_stranko(stranka: Stranka):
     
 
 @app.get("/preveriusername/{username}")
-def preveri_username(username: str):
+def preveri_username(username: str, request: Request):
     try:
+        logger.info(
+        "Zacetek preverjanja uporabniskega imena",
+        extra={"request_id": request.state.request_id}
+        )
         conn = pool.get_connection()
         cursor = conn.cursor()
         
