@@ -243,14 +243,32 @@ def preveri_username(username: str, request: Request):
         query = "SELECT IDUporabnik, UporabniskoIme, Vloga, UniqueID FROM Uporabnik WHERE UporabniskoIme = %s"
         cursor.execute(query,(username,))
         rows = cursor.fetchall()
-        
+        logger.info(
+        "Dobljen rezultat preverjanja",
+        extra={"request_id": request.state.request_id, "endpoint": "preveriusername", "service": "upopri"}
+        )
         if rows:
+            logger.info(
+            "Uporabnisko ime: "+username+" ze obstaja!",
+            extra={"request_id": request.state.request_id, "endpoint": "preveriusername", "service": "upopri"}
+            )
             return {"valid": "False"}
         else:
+            logger.info(
+            "Uporabnisko ime: "+username+" se ne obstaja!",
+            extra={"request_id": request.state.request_id, "endpoint": "preveriusername", "service": "upopri"}
+            )            
             return {"valid": "True"}
     except Exception as e:
-        print("Error: ", e)
+            logger.error(
+            "Med preverjanjem unikatnosti uporabniskega imena je prislo do napake: "+e,
+            extra={"request_id": request.state.request_id, "endpoint": "preveriusername", "service": "upopri"}
+            )
     finally:
+        logger.info(
+        "Zapiranje trenutne povezave s podatkovno bazo",
+        extra={"request_id": request.state.request_id, "endpoint": "preveriusername", "service": "upopri"}
+        )
         cursor.close()
         conn.close() 
     return {"valid": "unknown"}
