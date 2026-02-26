@@ -233,9 +233,11 @@ def registriraj_stranko(stranka: Stranka):
 @app.get("/preveriusername/{username}")
 def preveri_username(username: str, request: Request):
     try:
+        route = request.scope.get("route")
+        endpoint_name = route.name  # This is the FastAPI endpoint name        
         logger.info(
         "Zacetek preverjanja uporabniskega imena",
-        extra={"request_id": request.state.request_id, "endpoint": "preveriusername", "service": "upopri"}
+        extra={"request_id": request.state.request_id, "endpoint": endpoint_name, "service": "upopri"}
         )
         conn = pool.get_connection()
         cursor = conn.cursor()
@@ -245,29 +247,29 @@ def preveri_username(username: str, request: Request):
         rows = cursor.fetchall()
         logger.info(
         "Dobljen rezultat preverjanja",
-        extra={"request_id": request.state.request_id, "endpoint": "preveriusername", "service": "upopri"}
+        extra={"request_id": request.state.request_id, "endpoint": endpoint_name, "service": "upopri"}
         )
         if rows:
             logger.info(
             "Uporabnisko ime: "+username+" ze obstaja!",
-            extra={"request_id": request.state.request_id, "endpoint": "preveriusername", "service": "upopri"}
+            extra={"request_id": request.state.request_id, "endpoint": endpoint_name, "service": "upopri"}
             )
             return {"valid": "False"}
         else:
             logger.info(
             "Uporabnisko ime: "+username+" se ne obstaja!",
-            extra={"request_id": request.state.request_id, "endpoint": "preveriusername", "service": "upopri"}
+            extra={"request_id": request.state.request_id, "endpoint": endpoint_name, "service": "upopri"}
             )            
             return {"valid": "True"}
     except Exception as e:
             logger.error(
             "Med preverjanjem unikatnosti uporabniskega imena je prislo do napake: "+e,
-            extra={"request_id": request.state.request_id, "endpoint": "preveriusername", "service": "upopri"}
+            extra={"request_id": request.state.request_id, "endpoint": endpoint_name, "service": "upopri"}
             )
     finally:
         logger.info(
         "Zapiranje trenutne povezave s podatkovno bazo",
-        extra={"request_id": request.state.request_id, "endpoint": "preveriusername", "service": "upopri"}
+        extra={"request_id": request.state.request_id, "endpoint": endpoint_name, "service": "upopri"}
         )
         cursor.close()
         conn.close() 
