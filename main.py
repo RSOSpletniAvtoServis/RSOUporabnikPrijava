@@ -15,6 +15,8 @@ import logging
 import sys
 from pythonjsonlogger import jsonlogger
 
+from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -25,6 +27,13 @@ formatter = jsonlogger.JsonFormatter(
 )
 logHandler.setFormatter(formatter)
 logger.addHandler(logHandler)
+
+REQUEST_COUNT = Counter(
+    'http_requests_total', 'Total HTTP requests', ['method', 'endpoint', 'http_status']
+)
+REQUEST_LATENCY = Histogram(
+    'http_request_latency_seconds', 'HTTP request latency', ['method', 'endpoint']
+)
 
 
 DB_URL = os.getenv("DB_URL","127.0.0.1")
@@ -88,6 +97,16 @@ async def add_request_id(request: Request, call_next):
     response.headers["X-Request-ID"] = request_id
     return response
 
+
+@app.middleware("http")
+async def metrics_middleware(request: Request, call_next):
+    import time
+    start = time.time()
+    response = await call_next(request)
+    latency = time.time() - start
+    REQUEST_COUNT.labels(request.method, request.url.path, response.status_code).inc()
+    REQUEST_LATENCY.labels(request.method, request.url.path).observe(latency)
+    return response
 
 
 
@@ -688,3 +707,9 @@ def live():
 @app.get("/health/ready")
 def ready():
     return {"status": "ready"}
+    
+    
+@app.get("/metrics")
+async def metrics():
+    from fastapi.responses import Response
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
