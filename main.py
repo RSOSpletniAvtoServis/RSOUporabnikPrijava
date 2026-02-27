@@ -23,7 +23,7 @@ logger.setLevel(logging.INFO)
 
 logHandler = logging.StreamHandler(sys.stdout)
 formatter = jsonlogger.JsonFormatter(
-    "%(asctime)s %(levelname)s %(name)s %(message)s %(request_id)s %(endpoint)s %(service)s"
+    "%(asctime)s %(levelname)s %(name)s %(message)s"
 )
 logHandler.setFormatter(formatter)
 logger.addHandler(logHandler)
@@ -255,10 +255,6 @@ def preveri_username(username: str, request: Request):
         route = request.scope.get("route")
         endpoint_name = route.name  # This is the FastAPI endpoint name        
         logger.info(
-        "Zacetek preverjanja uporabniskega imena",
-        extra={"request_id": request.state.request_id, "endpoint": endpoint_name, "service": "upopri"}
-        )
-        logger.info(
             f"Zacetek preverjanja uporabniskega imena | "
             f"request_id={request.state.request_id} | "
             f"endpoint={endpoint_name} | "
@@ -271,10 +267,6 @@ def preveri_username(username: str, request: Request):
         cursor.execute(query,(username,))
         rows = cursor.fetchall()
         logger.info(
-        "Dobljen rezultat preverjanja",
-        extra={"request_id": request.state.request_id, "endpoint": endpoint_name, "service": "upopri"}
-        )
-        logger.info(
             f"Dobljen rezultat preverjanja | "
             f"request_id={request.state.request_id} | "
             f"endpoint={endpoint_name} | "
@@ -282,21 +274,13 @@ def preveri_username(username: str, request: Request):
         )
         if rows:
             logger.info(
-            "Uporabnisko ime: "+username+" ze obstaja!",
-            extra={"request_id": request.state.request_id, "endpoint": endpoint_name, "service": "upopri"}
-            )
-            logger.info(
                 f"Uporabnisko ime: {username} ze obstaja! | "
                 f"request_id={request.state.request_id} | "
                 f"endpoint={endpoint_name} | "
                 f"service=upopri"
             )
             return {"valid": "False"}
-        else:
-            logger.info(
-            "Uporabnisko ime: "+username+" se ne obstaja!",
-            extra={"request_id": request.state.request_id, "endpoint": endpoint_name, "service": "upopri"}
-            )      
+        else:    
             logger.info(
                 f"Uporabnisko ime: {username} se ne obstaja! | "
                 f"request_id={request.state.request_id} | "
@@ -306,20 +290,12 @@ def preveri_username(username: str, request: Request):
             return {"valid": "True"}
     except Exception as e:
             logger.error(
-            "Med preverjanjem unikatnosti uporabniskega imena je prislo do napake: "+e,
-            extra={"request_id": request.state.request_id, "endpoint": endpoint_name, "service": "upopri"}
-            )
-            logger.error(
                 f"Med preverjanjem unikatnosti uporabniskega imena je prislo do napake: {e} | "
                 f"request_id={request.state.request_id} | "
                 f"endpoint={endpoint_name} | "
                 f"service=upopri"
             )
     finally:
-        logger.info(
-        "Zapiranje trenutne povezave s podatkovno bazo",
-        extra={"request_id": request.state.request_id, "endpoint": endpoint_name, "service": "upopri"}
-        )
         logger.info(
             f"Zapiranje trenutne povezave s podatkovno bazo | "
             f"request_id={request.state.request_id} | "
