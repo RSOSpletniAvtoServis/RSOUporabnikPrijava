@@ -258,6 +258,12 @@ def preveri_username(username: str, request: Request):
         "Zacetek preverjanja uporabniskega imena",
         extra={"request_id": request.state.request_id, "endpoint": endpoint_name, "service": "upopri"}
         )
+        logger.info(
+            f"Zacetek preverjanja uporabniskega imena | "
+            f"request_id={request.state.request_id} | "
+            f"endpoint={endpoint_name} | "
+            f"service=upopri"
+        )
         conn = pool.get_connection()
         cursor = conn.cursor()
         
@@ -268,16 +274,34 @@ def preveri_username(username: str, request: Request):
         "Dobljen rezultat preverjanja",
         extra={"request_id": request.state.request_id, "endpoint": endpoint_name, "service": "upopri"}
         )
+        logger.info(
+            f"Dobljen rezultat preverjanja | "
+            f"request_id={request.state.request_id} | "
+            f"endpoint={endpoint_name} | "
+            f"service=upopri"
+        )
         if rows:
             logger.info(
             "Uporabnisko ime: "+username+" ze obstaja!",
             extra={"request_id": request.state.request_id, "endpoint": endpoint_name, "service": "upopri"}
+            )
+            logger.info(
+                f"Uporabnisko ime: {username} ze obstaja! | "
+                f"request_id={request.state.request_id} | "
+                f"endpoint={endpoint_name} | "
+                f"service=upopri"
             )
             return {"valid": "False"}
         else:
             logger.info(
             "Uporabnisko ime: "+username+" se ne obstaja!",
             extra={"request_id": request.state.request_id, "endpoint": endpoint_name, "service": "upopri"}
+            )      
+            logger.info(
+                f"Uporabnisko ime: {username} se ne obstaja! | "
+                f"request_id={request.state.request_id} | "
+                f"endpoint={endpoint_name} | "
+                f"service=upopri"
             )            
             return {"valid": "True"}
     except Exception as e:
@@ -285,10 +309,22 @@ def preveri_username(username: str, request: Request):
             "Med preverjanjem unikatnosti uporabniskega imena je prislo do napake: "+e,
             extra={"request_id": request.state.request_id, "endpoint": endpoint_name, "service": "upopri"}
             )
+            logger.error(
+                f"Med preverjanjem unikatnosti uporabniskega imena je prislo do napake: {e} | "
+                f"request_id={request.state.request_id} | "
+                f"endpoint={endpoint_name} | "
+                f"service=upopri"
+            )
     finally:
         logger.info(
         "Zapiranje trenutne povezave s podatkovno bazo",
         extra={"request_id": request.state.request_id, "endpoint": endpoint_name, "service": "upopri"}
+        )
+        logger.info(
+            f"Zapiranje trenutne povezave s podatkovno bazo | "
+            f"request_id={request.state.request_id} | "
+            f"endpoint={endpoint_name} | "
+            f"service=upopri"
         )
         cursor.close()
         conn.close() 
